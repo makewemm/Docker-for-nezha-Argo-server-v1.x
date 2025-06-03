@@ -16,7 +16,6 @@ if [ ! -s /etc/supervisor/conf.d/damon.conf ]; then
     WEB_PORT=${WEB_PORT:-'8008'}
   fi
   PRO_PORT=${PRO_PORT:-'80'}
-  CADDY_HTTP_PORT=2052
   WORK_DIR=/dashboard
   IS_UPDATE=${IS_UPDATE:-'no'}
   # 如不分离备份的 github 账户，默认与哪吒登陆的 github 账户一致
@@ -59,10 +58,6 @@ if [ ! -s /etc/supervisor/conf.d/damon.conf ]; then
    # 使用caddy反代
     GRPC_PROXY_RUN="$WORK_DIR/caddy run --config $WORK_DIR/Caddyfile --watch"
   cat > $WORK_DIR/Caddyfile  << EOF
-{
-    http_port $CADDY_HTTP_PORT
-}
-
 :$PRO_PORT {
     handle /${UUID} {
         file_server {
@@ -259,7 +254,7 @@ ingress:
     service: ssh://localhost:22
     path: /$GH_CLIENTID/*
   - hostname: $ARGO_DOMAIN
-    service: http://localhost:$WEB_PORT
+    service: http://localhost:$PRO_PORT
   - service: http_status:404
 EOF
 
